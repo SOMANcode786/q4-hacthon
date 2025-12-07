@@ -8,14 +8,14 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-username.github.io',
+  url: 'https://SOMANcode786.github.io',
   // Set the /<base>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>'
-  baseUrl: '/AI-humanoid-robotics/',
+  baseUrl: '/q4-hacthon/',
 
   // GitHub pages deployment config.
-  organizationName: 'your-username', // Usually your GitHub org/user name.
-  projectName: 'AI-humanoid-robotics', // Usually your repo name.
+  organizationName: 'SOMANcode786', // Usually your GitHub org/user name.
+  projectName: 'q4-hacthon', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -32,7 +32,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/your-username/your-project/edit/main/',
+          editUrl: 'https://github.com/SOMANcode786/q4-hacthon/edit/main/',
         },
         blog: false, // Disable blog for this project
         theme: {
@@ -60,7 +60,7 @@ const config = {
             label: 'Book',
           },
           {
-            href: 'https://github.com/your-username/your-project',
+            href: 'https://github.com/SOMANcode786/q4-hacthon',
             label: 'GitHub',
             position: 'right',
           },
@@ -86,8 +86,8 @@ const config = {
                 href: 'https://www.linkedin.com/in/muhammad-soman-amir-khan',
               },
               {
-                label: 'Email: soman43@gmail.com',
-                href: 'mailto:soman43@gmail.com',
+                label: 'Email: somanamir43@gmail.com',
+                href: 'mailto:somanamir43@gmail.com',
               },
               {
                 label: 'Phone: +3196991873',
