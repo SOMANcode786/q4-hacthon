@@ -38,12 +38,11 @@ const ChatWidget = () => {
     setIsLoading(true);
 
     try {
-      // In a real implementation, this would call your backend API
-      // For now, we'll simulate a response
-      const response = await simulateAPIResponse(inputValue);
+      // Call the real backend API
+      const response = await callBackendAPI(inputValue);
       const botMessage = {
         id: Date.now() + 1,
-        text: response,
+        text: response.text,
         sender: 'bot',
         timestamp: new Date(),
         sources: response.sources || [] // Include sources if available
@@ -52,30 +51,54 @@ const ChatWidget = () => {
     } catch (error) {
       const errorMessage = {
         id: Date.now() + 1,
-        text: 'Sorry, I encountered an error processing your request.',
+        text: 'Sorry, I encountered an error processing your request. Please make sure the backend server is running on port 8000.',
         sender: 'bot',
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
+      console.error('Chat error:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Simulate API response (replace with actual API call)
-  const simulateAPIResponse = async (query) => {
-    // This is a placeholder - in real implementation, call your backend API
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          text: `I received your query: "${query}". This is a simulated response from the RAG chatbot. In the real implementation, this would call the backend API to get a response based on the book content.`,
-          sources: [
-            { title: 'Introduction to Physical AI', url: '/docs/introduction' },
-            { title: 'The Robotic Nervous System', url: '/docs/ros2' }
-          ]
-        });
-      }, 1000);
-    });
+  // Call the real backend API
+  const callBackendAPI = async (query) => {
+    try {
+      // Generate a conversation ID if needed
+      const conversationId = 'conv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+      // Make API call to backend
+      const response = await fetch('http://localhost:8000/api/rag/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: query,
+          conversation_id: conversationId,
+          chapter_ids: [] // Can specify chapter IDs if needed
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Format response to match expected structure
+      return {
+        text: data.response,
+        sources: data.sources.map(source => ({
+          title: source,
+          url: source // This might need to be adjusted based on actual source format
+        }))
+      };
+    } catch (error) {
+      console.error('Error calling backend API:', error);
+      throw error;
+    }
   };
 
   // Handle text selection for context-aware queries
@@ -109,7 +132,13 @@ const ChatWidget = () => {
       {isOpen ? (
         <div className="chat-container">
           <div className="chat-header">
-            <h3>AI Humanoid Robotics Assistant</h3>
+            <div className="chat-header-content">
+              <div className="chat-header-icon">🤖</div>
+              <div className="chat-header-text">
+                <h3>AI Humanoid Robotics Assistant</h3>
+                <p className="chat-status">Online</p>
+              </div>
+            </div>
             <button className="chat-close" onClick={toggleChat}>
               ×
             </button>
@@ -118,46 +147,54 @@ const ChatWidget = () => {
           <div className="chat-messages">
             {messages.length === 0 ? (
               <div className="chat-welcome">
-                <p>Hello! I'm your AI assistant for Humanoid Robotics content.</p>
-                <p>Ask me anything about the book or select text on the page for context-aware help.</p>
+                <div className="bot-icon-large">🤖</div>
+                <h4>Hello! I'm your AI assistant</h4>
+                <p>Ask me anything about Physical AI and Humanoid Robotics</p>
               </div>
             ) : (
               messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`chat-message ${message.sender}-message`}
+                  className={`message-bubble ${message.sender}-message`}
                 >
-                  <div className="message-content">
-                    {message.text}
-                    {message.sources && message.sources.length > 0 && (
-                      <div className="message-sources">
-                        <small>📚 Sources:</small>
-                        <ul>
-                          {message.sources.map((source, idx) => (
-                            <li key={idx}>
-                              <a href={source.url} target="_blank" rel="noopener noreferrer">
-                                {source.title}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                  <div className="message-avatar">
+                    {message.sender === 'user' ? '👤' : '🤖'}
                   </div>
-                  <div className={`message-timestamp ${message.sender}-timestamp`}>
-                    {formatTime(message.timestamp)}
+                  <div className="message-content-wrapper">
+                    <div className="message-content">
+                      {message.text}
+                      {message.sources && message.sources.length > 0 && (
+                        <div className="message-sources">
+                          <small>📚 Sources:</small>
+                          <ul>
+                            {message.sources.map((source, idx) => (
+                              <li key={idx}>
+                                <a href={source.url} target="_blank" rel="noopener noreferrer">
+                                  {source.title}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                    <div className={`message-timestamp ${message.sender}-timestamp`}>
+                      {formatTime(message.timestamp)}
+                    </div>
                   </div>
                 </div>
               ))
             )}
             {isLoading && (
-              <div className="chat-message bot-message">
-                <div className="message-content">
-                  <div className="typing-indicator">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span>AI is thinking...</span>
+              <div className="message-bubble bot-message">
+                <div className="message-avatar">🤖</div>
+                <div className="message-content-wrapper">
+                  <div className="message-content">
+                    <div className="typing-indicator">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -170,17 +207,18 @@ const ChatWidget = () => {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask about Humanoid Robotics content..."
+              placeholder="Type your message here..."
               disabled={isLoading}
+              className="chat-input"
             />
-            <button type="submit" disabled={isLoading || !inputValue.trim()}>
-              🚀 Send
+            <button type="submit" disabled={isLoading || !inputValue.trim()} className="send-button">
+              ➤
             </button>
           </form>
         </div>
       ) : (
         <button className="chat-toggle" onClick={toggleChat}>
-          <span>🤖 AI Assistant</span>
+          <span>🤖</span>
         </button>
       )}
     </div>

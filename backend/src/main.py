@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from src.api import content_routes, rag_routes
 import uvicorn
 import os
@@ -11,6 +12,15 @@ app = FastAPI(
     title="Physical AI & Humanoid Robotics RAG API",
     description="API for the Physical AI & Humanoid Robotics Book RAG chatbot system",
     version="1.0.0"
+)
+
+# Add CORS middleware to allow requests from frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Include API routes

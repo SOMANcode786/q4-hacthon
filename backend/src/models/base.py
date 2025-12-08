@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("NEON_DATABASE_URL", "sqlite+aiosqlite:///./test.db")
+DATABASE_URL = os.getenv("NEON_DATABASE_URL", "sqlite+aiosqlite:///./physical_ai_rag.db")
 
 Base = declarative_base()
 

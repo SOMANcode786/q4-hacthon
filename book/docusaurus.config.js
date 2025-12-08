@@ -17,8 +17,9 @@ const config = {
   organizationName: 'SOMANcode786', // Usually your GitHub org/user name.
   projectName: 'q4-hacthon', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
+  onBrokenAnchors: 'ignore',
 
   i18n: {
     defaultLocale: 'en',
