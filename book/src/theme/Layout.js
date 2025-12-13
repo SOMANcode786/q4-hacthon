@@ -1,12 +1,12 @@
 import React from 'react';
 import OriginalLayout from '@theme-original/Layout';
-import FloatingChatbot from '@site/src/components/FloatingChatbot';
+import EnhancedFloatingChatbot from '@site/src/components/EnhancedFloatingChatbot';
 
 export default function Layout(props) {
   return (
     <>
       <OriginalLayout {...props} />
-      <FloatingChatbot />
+      <EnhancedFloatingChatbot />
     </>
   );
 }
